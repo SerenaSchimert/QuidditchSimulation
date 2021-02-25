@@ -5,23 +5,57 @@ using UnityEngine;
 
 namespace Boids
 {
-    [CreateAssetMenu(fileName = "FlockSettings", menuName = "ScriptableObjects/FlockSettingsScriptableObject", order = 1)]
-    public class FlockSettingScriptable : ScriptableObject
+    [CreateAssetMenu(fileName = "TeamSettings", menuName = "ScriptableObjects/TeamSettingsScriptableObject", order = 1)]
+    public class TeamSettingScriptable : ScriptableObject
     {
 
         [Header("General")]
 
         /// <summary>
-        /// States if the sphere representing the center of the flock should be visible.
+        /// Below give the parameters of player attribute distributions within this team
+        /// </summary>
+        /// 
+
+        [Tooltip("Gryffindor or Slytherin")]
+        public string team;
+
+        /*
+        [Tooltip("Weight mean")]
+        public float wMean;
+
+        [Tooltip("Weight stdev")]
+        public float wStdev;
+
+        [Tooltip("Aggresion mean")]
+        public float aMean;
+
+        [Tooltip("Aggresion stdev")]
+        public float aStdev;
+
+        [Tooltip("Max velocity mean")]
+        public float mVMean;
+
+        [Tooltip("Max velocity stdev")]
+        public float mVStdev;
+
+        [Tooltip("Max exhaustion mean")]
+        public float mEMean;
+
+        [Tooltip("Max exhaustion stdev")]
+        public float mEStdev;
+        */
+
+        /// <summary>
+        /// States if the sphere representing the center of the Team should be visible.
         /// </summary>
         [Tooltip("States if the sphere representing the center should be visible.")]
         public bool IsCenterVisible;
 
         /// <summary>
-        /// The number of birds to generate on awake.
+        /// The number of players to generate on awake.
         /// </summary>
-        [Tooltip("The number of birds to generate on awake.")]
-        public int NumberOfBirdsToGenerateOnAwake = 10;
+        [Tooltip("The number of players to generate on awake.")]
+        public int NumberOfPlayersToGenerateOnAwake = 10;
 
         /// <summary>
         /// The minimum speed a bird can fly.
@@ -42,7 +76,6 @@ namespace Boids
         public float MaxSteerForce = 1.5f;
 
 
-
         [Header("Cohesion Force")]
 
         /// <summary>
@@ -52,16 +85,16 @@ namespace Boids
         public float CohesionForceWeight = 1;
 
         /// <summary>
-        /// Uses the center of the flock when enforcing cohesion.
-        /// The other option is to use neighbor birds.
+        /// Uses the center of the Team when enforcing cohesion.
+        /// The other option is to use neighbor players.
         /// </summary>
-        [Tooltip("Uses the center of the flock when enforcing cohesion. The other option is to use neighbor birds.")]
+        [Tooltip("Uses the center of the Team when enforcing cohesion. The other option is to use neighbor players.")]
         public bool UseCenterForCohesion = true;
 
         /// <summary>
-        /// The distance used to find nearby birds that we need to stay around.
+        /// The distance used to find nearby players that we need to stay around.
         /// </summary>
-        [Tooltip("The distance used to find nearby birds that we need to stay around.")]
+        [Tooltip("The distance used to find nearby players that we need to stay around.")]
         public float CohesionRadiusThreshold = 4;
 
 
@@ -75,9 +108,9 @@ namespace Boids
         public float SeperationForceWeight = 1;
 
         /// <summary>
-        /// The distance used to find nearby birds that we need to keep distance from.
+        /// The distance used to find nearby players that we need to keep distance from.
         /// </summary>
-        [Tooltip("The distance used to find nearby birds that we need to keep distance from.")]
+        [Tooltip("The distance used to find nearby players that we need to keep distance from.")]
         public float SeperationRadiusThreshold = 1;
 
 
@@ -91,9 +124,9 @@ namespace Boids
         public float AlignmentForceWeight = 1;
 
         /// <summary>
-        /// The distance used to find nearby birds that we need to stay aligned with.
+        /// The distance used to find nearby players that we need to stay aligned with.
         /// </summary>
-        [Tooltip("The distance used to find nearby birds that we need to stay aligned with.")]
+        [Tooltip("The distance used to find nearby players that we need to stay aligned with.")]
         public float AlignmentRadiusThreshold = 2;
 
 
@@ -112,40 +145,6 @@ namespace Boids
         [Tooltip("The distance used to find nearby obstacles that we need to avoid.")]
         public float CollisionAvoidanceRadiusThreshold = 1;
 
-        // Code referenced from discussion of generating normal distribution-compliant values found here: 
-        // https://stats.stackexchange.com/questions/16334/how-to-sample-from-a-normal-distribution-with-known-mean-and-variance-using-a-co
-        public Tuple<float, float> GeneratePlayerSettings(float mean, float standDev)
-        {
-
-            bool generate = true;
-
-            float x = 0;
-            float y = 0;
-
-            while (generate)
-            {
-                System.Random rnd = new System.Random();
-                
-                // first generate number between -1 and 1 (precision only to 0.001)
-                float u = ((float)rnd.Next(-1000,1000))/1000.0f;
-                float v = ((float)rnd.Next(-1000, 1000)) / 1000.0f;
-                float w = (float)Math.Pow(u, 2.0) + (float)Math.Pow(v, 2.0);
-                if (w < 1)
-                {
-                    generate = false;
-                    float z = (float)Math.Sqrt((-2 * Math.Log(w)) / w);
-                    x = u * z;
-                    y = v * z;
-                }
-
-            }
-
-            // Convert generated random numbers to deviation from mean
-            var numbers = Tuple.Create((x * standDev + mean), (y * standDev + mean));
-
-            return numbers;
-
-        }
 
     }
 

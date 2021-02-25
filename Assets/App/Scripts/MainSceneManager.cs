@@ -10,17 +10,17 @@ public class MainSceneManager : MonoBehaviour
     #region Initialization and Updates
 
     /// <summary>
-    /// Flock settings.
+    /// Team settings.
     /// </summary>
-    public FlockSettingScriptable Settings;
+    public TeamSettingScriptable Settings;
 
     /// <summary>
     /// Executes once on start.
     /// </summary>
     private void Start()
     {
-        // Display the app version
-        DisplayVersion();
+        // Display the app ScoreBoard
+        DisplayScoreBoard();
 
         // Set and display general settings
         DisplayGeneralSettings(true);
@@ -59,23 +59,31 @@ public class MainSceneManager : MonoBehaviour
 
     #endregion
 
-    #region Version
+    #region ScoreBoard
 
     /// <summary>
-    /// Text UI element displaying the app version.
+    /// Text UI element displaying the app ScoreBoard.
     /// </summary>
     [SerializeField]
-    [Tooltip("Text UI element displaying the app version.")]
-    private Text Version;
+    [Tooltip("Text UI element displaying the app ScoreBoard.")]
+    private Text ScoreBoard;
+    [SerializeField]
+    [Tooltip("Text UI element displaying the gryffindor score.")]
+    private Text GryffindorScore;
+    [SerializeField]
+    [Tooltip("Text UI element displaying the slytherin score.")]
+    private Text SlytherinScore;
 
     /// <summary>
-    /// Displays current project's version.
+    /// Displays current project's ScoreBoard.
     /// </summary>
-    private void DisplayVersion()
+    private void DisplayScoreBoard()
     {
-        Version.text = string.Format("Version: {0}", Application.version);
+        ScoreBoard.text = string.Format("ScoreBoard");
+        GryffindorScore.text = string.Format("G: 0");
+        SlytherinScore.text = string.Format("S: 0");
     }
-
+   
     #endregion
 
     #region General Settings

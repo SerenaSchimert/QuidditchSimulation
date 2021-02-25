@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Boids
 {
-    public class Bird : MonoBehaviour
+    public class Player : MonoBehaviour
     {
 
         #region Initialization
@@ -19,16 +19,23 @@ namespace Boids
         }
 
         /// <summary>
-        /// Initiaizes the bird.
+        /// Initiaizes the player.
         /// </summary>
-        public void Initialize(Flock flock)
+        public void Initialize(Team team, float w, float mV, float a, float mE)
         {
-            // Give the bird a small push
-            Rigidbody.velocity = transform.forward.normalized * flock.FlockSettings.MinSpeed;
+            // Give the player a small push
+            Rigidbody.velocity = transform.forward.normalized * team.TeamSettings.MinSpeed;
 
-            // Reference the flock this bird belongs to
-            Flock = flock;
-        }
+            // Reference the team this player belongs to
+            Team = team;
+
+            // Initialize attributes
+            weight = w;
+            maxVelocity = mV;
+            aggressiveness = a;
+            maxExhaustion = mE;
+            exhaustion = 0;
+         }
 
         #endregion
 
@@ -40,16 +47,26 @@ namespace Boids
         private Rigidbody Rigidbody;
 
         /// <summary>
-        /// The flock this bird belongs to.
+        /// The team this player belongs to.
         /// </summary>
-        private Flock Flock;
+        private Team Team;
+
+        /// <summary>
+        /// Player attributes
+        /// </summary>
+        private float weight;
+        private float maxVelocity;
+        private float aggressiveness;
+        private float maxExhaustion;
+        private float exhaustion;
+
 
         #endregion
 
         #region Methods
 
         /// <summary>
-        /// Continuous update the speed and rotation of the bird.
+        /// Continuous update the speed and rotation of the player.
         /// </summary>
         private void Update()
         {
@@ -58,19 +75,19 @@ namespace Boids
 
             // Compute cohesion
             acceleration += NormalizeSteeringForce(ComputeCohisionForce())
-                * Flock.FlockSettings.CohesionForceWeight;
+                * Team.TeamSettings.CohesionForceWeight;
 
             // Compute seperation
             acceleration += NormalizeSteeringForce(ComputeSeperationForce())
-                * Flock.FlockSettings.SeperationForceWeight;
+                * Team.TeamSettings.SeperationForceWeight;
 
             // Compute alignment
             acceleration += NormalizeSteeringForce(ComputeAlignmentForce())
-                * Flock.FlockSettings.AlignmentForceWeight;
+                * Team.TeamSettings.AlignmentForceWeight;
 
             // Compute collision avoidance
             acceleration += NormalizeSteeringForce(ComputeCollisionAvoidanceForce()) 
-                * Flock.FlockSettings.CollisionAvoidanceForceWeight;
+                * Team.TeamSettings.CollisionAvoidanceForceWeight;
 
             // Compute the new velocity
             Vector3 velocity = Rigidbody.velocity;
@@ -78,7 +95,7 @@ namespace Boids
 
             // Ensure the velocity remains within the accepted range
             velocity = velocity.normalized * Mathf.Clamp(velocity.magnitude,
-                Flock.FlockSettings.MinSpeed, Flock.FlockSettings.MaxSpeed);
+                Team.TeamSettings.MinSpeed, Team.TeamSettings.MaxSpeed);
 
             // Apply velocity
             Rigidbody.velocity = velocity;
@@ -92,46 +109,46 @@ namespace Boids
         /// </summary>
         private Vector3 NormalizeSteeringForce(Vector3 force)
         {
-            return force.normalized * Mathf.Clamp(force.magnitude, 0, Flock.FlockSettings.MaxSteerForce);
+            return force.normalized * Mathf.Clamp(force.magnitude, 0, Team.TeamSettings.MaxSteerForce);
         }
 
         /// <summary>
-        /// Computes the cohision force that will pull the bird back to the center of the flock.
+        /// Computes the cohision force that will pull the player back to the center of the team.
         /// </summary>
         private Vector3 ComputeCohisionForce()
         {
-            // Check if this is the only bird in the flock
-            if (Flock.Birds.Count == 1)
+            // Check if this is the only player in the team
+            if (Team.Players.Count == 1)
                 return Vector3.zero;
 
-            // Check if we are using the center of the flock
-            if (Flock.FlockSettings.UseCenterForCohesion)
+            // Check if we are using the center of the team
+            if (Team.TeamSettings.UseCenterForCohesion)
             {
-                // Get current center of the flock
-                Vector3 center = Flock.CenterPosition;
+                // Get current center of the team
+                Vector3 center = Team.CenterPosition;
 
-                // Get rid of this bird's position from the center
-                float newCenterX = center.x * Flock.Birds.Count - transform.localPosition.x;
-                float newCenterY = center.y * Flock.Birds.Count - transform.localPosition.y;
-                float newCenterZ = center.z * Flock.Birds.Count - transform.localPosition.z;
-                Vector3 newCenter = new Vector3(newCenterX, newCenterY, newCenterZ) / (Flock.Birds.Count - 1);
+                // Get rid of this player's position from the center
+                float newCenterX = center.x * Team.Players.Count - transform.localPosition.x;
+                float newCenterY = center.y * Team.Players.Count - transform.localPosition.y;
+                float newCenterZ = center.z * Team.Players.Count - transform.localPosition.z;
+                Vector3 newCenter = new Vector3(newCenterX, newCenterY, newCenterZ) / (Team.Players.Count - 1);
 
                 // Compute force
                 return newCenter - transform.localPosition;
             }
 
-            // Else, use the center of the neighbor birds
+            // Else, use the center of the neighbor players
             float centerX = 0, centerY = 0, centerZ = 0;
             int count = 0;
-            foreach (Bird bird in Flock.Birds)
+            foreach (Player player in Team.Players)
             {
-                if (bird == this
-                    || (bird.transform.position - transform.position).magnitude > Flock.FlockSettings.CohesionRadiusThreshold)
+                if (player == this
+                    || (player.transform.position - transform.position).magnitude > Team.TeamSettings.CohesionRadiusThreshold)
                     continue;
 
-                centerX += bird.transform.localPosition.x;
-                centerY += bird.transform.localPosition.y;
-                centerZ += bird.transform.localPosition.z;
+                centerX += player.transform.localPosition.x;
+                centerY += player.transform.localPosition.y;
+                centerZ += player.transform.localPosition.z;
                 count++;
             }
 
@@ -142,43 +159,43 @@ namespace Boids
         }
 
         /// <summary>
-        /// Computes the seperation force that ensures a safe distance is kept between the birds.
+        /// Computes the seperation force that ensures a safe distance is kept between the players.
         /// </summary>
         private Vector3 ComputeSeperationForce()
         {
             // Initialize seperation force
             Vector3 force = Vector3.zero;
 
-            // Find nearby birds
-            foreach (Bird bird in Flock.Birds)
+            // Find nearby players
+            foreach (Player player in Team.Players)
             {
-                if (bird == this
-                    || (bird.transform.position - transform.position).magnitude > Flock.FlockSettings.SeperationRadiusThreshold)
+                if (player == this
+                    || (player.transform.position - transform.position).magnitude > Team.TeamSettings.SeperationRadiusThreshold)
                     continue;
 
                 // Repel aaway
-                force += transform.position - bird.transform.position;
+                force += transform.position - player.transform.position;
             }
 
             return force;
         }
 
         /// <summary>
-        /// Computes the alignment force that aligns this bird with nearby birds.
+        /// Computes the alignment force that aligns this player with nearby players.
         /// </summary>
         private Vector3 ComputeAlignmentForce()
         {
             // Initialize alignment force
             Vector3 force = Vector3.zero;
 
-            // Find nearby birds
-            foreach (Bird bird in Flock.Birds)
+            // Find nearby players
+            foreach (Player player in Team.Players)
             {
-                if (bird == this
-                    || (bird.transform.position - transform.position).magnitude > Flock.FlockSettings.AlignmentRadiusThreshold)
+                if (player == this
+                    || (player.transform.position - transform.position).magnitude > Team.TeamSettings.AlignmentRadiusThreshold)
                     continue;
 
-                force += bird.transform.forward;
+                force += player.transform.forward;
             }
 
             return force;
@@ -191,17 +208,17 @@ namespace Boids
         {
             // Check if heading to collision
             if (!Physics.SphereCast(transform.position,
-                Flock.FlockSettings.CollisionAvoidanceRadiusThreshold, 
+                Team.TeamSettings.CollisionAvoidanceRadiusThreshold, 
                 transform.forward, 
                 out RaycastHit hitInfo,
-                Flock.FlockSettings.CollisionAvoidanceRadiusThreshold))
+                Team.TeamSettings.CollisionAvoidanceRadiusThreshold))
                 return Vector3.zero;
 
             // Compute force
             return transform.position - hitInfo.point;
         }
 
-        #endregion
+    #endregion
 
     }
 }
