@@ -1,6 +1,19 @@
 # 565-A2
 Quidditch Simulation via Unity
 
+Functionality:
+
+Forces:
+- Very high cohesion of players towards snitch (by far strongest force, otherwise game takes to long to finish)
+- Snitch has moderate collision avoidance
+- Players have very low collision avoidance
+- Players have a mild repulsion/seperation from players on the same team as them
+
+Added Player Attributes:
+- Recoveryrate (float) -> how fast player exhaustion lowers while resting (sampled from distribution like other attributes)
+	- (More likely to be higher in Gryffindors)
+- Steadfast (bool) -> if steadfast, player will not rest when their team is losing, i.e. the team score is lower than the opponent's (sampled from a distribution, then cut of as above or below 0.5)
+	- (More likely in Gryffindors)
 
 Code Sources:
 The Boids-Simulation found here:https://omaddam.github.io/Boids-Simulation/

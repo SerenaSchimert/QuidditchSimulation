@@ -17,12 +17,12 @@ MonoBehaviour:
   NumberOfPlayersToGenerateOnAwake: 10
   MinSpeed: 1
   MaxSteerForce: 3
-  CohesionForceWeight: 5
-  UseCenterForCohesion: 1
-  CohesionRadiusThreshold: 2
-  SeperationForceWeight: 1
-  SeperationRadiusThreshold: 1
+  CohesionForceWeight: 50
+  UseCenterForCohesion: 0
+  CohesionRadiusThreshold: 25
+  SeperationForceWeight: 2
+  SeperationRadiusThreshold: 4
   AlignmentForceWeight: 0
-  AlignmentRadiusThreshold: 2
-  CollisionAvoidanceForceWeight: 2
-  CollisionAvoidanceRadiusThreshold: 4
+  AlignmentRadiusThreshold: 0
+  CollisionAvoidanceForceWeight: 1
+  CollisionAvoidanceRadiusThreshold: 1

@@ -88,12 +88,16 @@ namespace Boids
         //Last won team
         private Team lastWinBy;
 
+        public int GryffindorScore =  0;
+        public int SlytherinScore = 0;
+        public string winner = null;
+
         /// <summary>
         /// Snitch attributes
         /// </summary>
         private float weight = 10.0f;
         private float maxVelocity = 50.0f;
-        private float minVelocity = 10.0f;
+        private float minVelocity = 1.0f;
 
         public float MaxSteerForce = 1.5f;
 
@@ -161,6 +165,21 @@ namespace Boids
             return lastWinBy;
         }
 
+        public string getWinner() 
+        {
+            return winner;
+        }
+
+        public int getGryffindorScore()
+        {
+            return GryffindorScore;
+        }
+
+        public int getSlytherinScore()
+        {
+            return SlytherinScore;
+        }
+
         /// <summary>
         /// Continuous update the speed and rotation of the player.
         /// </summary>
@@ -168,6 +187,10 @@ namespace Boids
         {
             // Initialize the new velocity
             Vector3 acceleration = Vector3.zero;
+
+            if (SlytherinScore >= 100 && GryffindorScore < 100) winner = "Slytherin";
+
+            else if (SlytherinScore < 100 && GryffindorScore >= 100) winner = "Gryffindor";
 
             /*
             // Compute cohesion
@@ -330,6 +353,7 @@ namespace Boids
             return transform.position - hitInfo.point;
         }
 
+        /*
         private void OnTriggerEnter(Collider col)
         {
             // Check that collision is with rigidbody object
@@ -337,12 +361,23 @@ namespace Boids
 
             Rigidbody targetRigidbody = col.GetComponent<Rigidbody>();
 
-            if (targetRigidbody.GetComponent<Player>() != null) { 
-            
+            if (targetRigidbody.GetComponent<Player>() != null) {
+
+                if (targetRigidbody.GetComponent<Player>().Team.team == "Slytherin")
+                {
+
+                    if (lastWinBy == targetRigidbody.GetComponent<Player>().Team) SlytherinScore += 2;
+                    else SlytherinScore += 1;
+                }
+                else {
+                    if (lastWinBy == targetRigidbody.GetComponent<Player>().Team) GryffindorScore += 2;
+                    else GryffindorScore += 1;
+                }
+
             }
 
-    
         }
+        */
 
         #endregion
 

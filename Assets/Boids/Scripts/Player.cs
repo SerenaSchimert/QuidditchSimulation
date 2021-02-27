@@ -22,7 +22,7 @@ namespace Boids
         /// <summary>
         /// Initiaizes the player.
         /// </summary>
-        public void Initialize(Team team, float w, float mV, float a, float mE)
+        public void Initialize(Team team, float w, float mV, float a, float mE, float rR, bool sF)
         {
             // Give the player a small push
             Rigidbody.velocity = transform.forward.normalized * team.TeamSettings.MinSpeed;
@@ -36,6 +36,9 @@ namespace Boids
             aggressiveness = a;
             maxExhaustion = mE;
             exhaustion = 0;
+
+            recoveryRate = rR;
+            steadFast = sF;
          }
 
         #endregion
@@ -50,7 +53,7 @@ namespace Boids
         /// <summary>
         /// The team this player belongs to.
         /// </summary>
-        private Team Team;
+        public Team Team;
 
         /// <summary>
         /// The team this player belongs to.
@@ -91,24 +94,31 @@ namespace Boids
 
             Vector3 velocity = Rigidbody.velocity;
 
-            if (exhaustion >= (maxExhaustion - 10.0f))
+            if (exhaustion >= (maxExhaustion - 5.0f))
             {
+                // rest only if not losing if steadFast attribute  is true
+                if (steadFast)
+                {
+                    if (Team.team == "Slytherin") {
 
-                resting = true;
+                        resting = (Team.Snitch.GetComponent<Snitch>().getGryffindorScore() <= Team.Snitch.GetComponent<Snitch>().getSlytherinScore());
+                    }
+                    else {
+                        
+                        resting = (Team.Snitch.GetComponent<Snitch>().getSlytherinScore() <= Team.Snitch.GetComponent<Snitch>().getGryffindorScore());
+                    }
+                }
+                else {
+                    resting = true;
+                }
             }
 
             if (exhaustion <= 10.0f)
             {
-
                 resting = false;
             }
 
-            if (exhaustion >= maxExhaustion) {
-
-                falling = true;
-            }
-
-            if (falling && (transform.localPosition.y <= 0.05f)) {
+            if (falling && transform.localPosition.y < 0) {
 
                 transform.localPosition = spawnPoint;
                 // Give the player another small push
@@ -116,6 +126,11 @@ namespace Boids
 
                 falling = false;
                 exhaustion = 0.0f;
+            }
+
+            if (exhaustion >= maxExhaustion) {
+
+                falling = true;
             }
 
             if (!falling)
@@ -137,7 +152,7 @@ namespace Boids
                 //acceleration += NormalizeSteeringForce(ComputeCollisionAvoidanceForce())
                   //  * Team.TeamSettings.CollisionAvoidanceForceWeight;
 
-                velocity += acceleration * Time.deltaTime;
+                velocity += ((acceleration*50.0f)/weight) * Time.deltaTime;
 
                 // Ensure the velocity remains within the accepted range
                 velocity = velocity.normalized * Mathf.Clamp(velocity.magnitude,
@@ -146,15 +161,15 @@ namespace Boids
             }
             else {
 
-                acceleration.y = -1.0f;
-                velocity += acceleration * Time.deltaTime;
+                acceleration.y = -9.8f;
+                velocity += (acceleration * 25.0f / weight) * Time.deltaTime;
 
             }
 
             if (resting) { 
                 
                 velocity = Vector3.zero;
-                exhaustion -= 0.25f;
+                exhaustion -= 0.5f*recoveryRate;
             }
 
             exhaustion += (velocity.x + velocity.y + velocity.z) / 20.0f;
@@ -281,17 +296,32 @@ namespace Boids
             return transform.position - hitInfo.point;
         }
 
+
         /// <summary>
-        /// Handle player or snitch collisions
+        /// Handle player-on-player collisions and collisions with ground
         /// </summary>
-        private void OnTriggerEnter(Collider col)
+        private void OnCollisionEnter(Collision col)
         {
+            // Immediate unconcious if player hits ground
+            if (col.gameObject.tag == "Ground") {
+
+                transform.localPosition = spawnPoint;
+                // Give the player another small push
+                Rigidbody.velocity = transform.forward.normalized * Team.TeamSettings.MinSpeed;
+
+                falling = false;
+                exhaustion = 0.0f;
+
+                return;
+            }
+
             // Check that collision is with rigidbody object
-            if (col.GetComponent<Rigidbody>() == null) return;
+            if (col.gameObject.GetComponent<Rigidbody>() == null) return;
 
-            Rigidbody targetRigidbody = col.GetComponent<Rigidbody>();
+            Rigidbody targetRigidbody = col.gameObject.GetComponent<Rigidbody>();
 
-            if (targetRigidbody.GetComponent<Player>() != null) {
+            if (targetRigidbody.GetComponent<Player>() != null)
+            {
 
                 float targetExhaustion = targetRigidbody.GetComponent<Player>().exhaustion;
                 float targetMaxExhaustion = targetRigidbody.GetComponent<Player>().maxExhaustion;
@@ -302,11 +332,13 @@ namespace Boids
                 float playerValue = aggressiveness * (((float)rnd.NextDouble()) * (1.2f - 0.8f) * (1.0f - (exhaustion / maxExhaustion)));
                 float targetValue = targetAggressiveness * (((float)rnd.NextDouble()) * (1.2f - 0.8f) * (1.0f - (targetExhaustion / targetMaxExhaustion)));
 
-                if (playerValue < targetValue) {
+                if (playerValue < targetValue)
+                {
 
-                    if (targetRigidbody.GetComponent<Player>().Team) 
+                    if (targetRigidbody.GetComponent<Player>().Team == Team)
                     {
-                        if (rnd.NextDouble() <= 0.05) 
+                        // 5% probability to go down if on same team
+                        if (rnd.NextDouble() <= 0.05)
                         {
                             falling = true;
                         }
@@ -317,15 +349,35 @@ namespace Boids
                     }
                 }
 
-            } else if (targetRigidbody.GetComponent<Snitch>() != null) {
+            }
+
+        }
+
+        /// <summary>
+        /// Handle snitch collisions
+        /// </summary>
+        private void OnTriggerEnter(Collider col)
+        {
+            // Check that collision is with rigidbody object
+            if (col.GetComponent<Rigidbody>() == null) return;
+
+            Rigidbody targetRigidbody = col.GetComponent<Rigidbody>();
+
+           if (targetRigidbody.GetComponent<Snitch>() != null) {
 
 
                 if (targetRigidbody.GetComponent<Snitch>().getLastWinBy() == Team)
                 {
                     Team.score += 2;
+
+                    if (Team.team == "Slytherin") targetRigidbody.GetComponent<Snitch>().SlytherinScore += 2;
+                    else targetRigidbody.GetComponent<Snitch>().GryffindorScore += 2;
                 }
                 else {
                     Team.score += 1;
+
+                    if (Team.team == "Slytherin") targetRigidbody.GetComponent<Snitch>().SlytherinScore += 1;
+                    else targetRigidbody.GetComponent<Snitch>().GryffindorScore += 1;
                 }
 
                 targetRigidbody.GetComponent<Snitch>().setLastWinBy(Team);

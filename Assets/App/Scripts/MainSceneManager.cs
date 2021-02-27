@@ -23,6 +23,8 @@ public class MainSceneManager : MonoBehaviour
 
     private GameObject Snitch;
 
+    private bool GameEnd = false;
+
     //public Snitch snitch;
     //public GameObject SnitchPrefab;
     //public GameObject SnitchParent;
@@ -90,6 +92,15 @@ public class MainSceneManager : MonoBehaviour
     /// </summary>
     private void Update()
     {
+
+        if (Snitch.GetComponent<Snitch>().winner == "Slytherin" || Snitch.GetComponent<Snitch>().winner == "Gryffindor") {
+
+            Winner.text = "The Winner is " + Snitch.GetComponent<Snitch>().getWinner() + "!";
+            if (Snitch.GetComponent<Snitch>().getWinner() == "Slytherin") Winner.color = Color.green;
+            else Winner.color = Color.red;
+        }
+
+
         // General settings
         UpdateGeneralSettings();
         DisplayGeneralSettings();
@@ -116,13 +127,16 @@ public class MainSceneManager : MonoBehaviour
     /// </summary>
     [SerializeField]
     [Tooltip("Text UI element displaying the app ScoreBoard.")]
-    private Text ScoreBoard;
+    public Text ScoreBoard;
     [SerializeField]
     [Tooltip("Text UI element displaying the gryffindor score.")]
-    private Text GryffindorScore;
+    public Text GryffindorScore;
     [SerializeField]
     [Tooltip("Text UI element displaying the slytherin score.")]
-    private Text SlytherinScore;
+    public Text SlytherinScore;
+    [SerializeField]
+    [Tooltip("Text UI element displaying the winner.")]
+    public Text Winner;
 
     /// <summary>
     /// Displays current project's ScoreBoard.
@@ -136,6 +150,7 @@ public class MainSceneManager : MonoBehaviour
    
     #endregion
 
+    
     #region General Settings
 
     [Header("General")]
@@ -143,36 +158,37 @@ public class MainSceneManager : MonoBehaviour
     /// <summary>
     /// Text UI element displaying the minimum speed.
     /// </summary>
-    public Text MinimumSpeedTextUI;
+    private Text MinimumSpeedTextUI;
 
     /// <summary>
     /// Slider UI element displaying the minimum speed.
     /// </summary>
-    public Slider MinimumSpeedSliderUI;
+    private Slider MinimumSpeedSliderUI;
 
     /// <summary>
     /// Text UI element displaying the maximum speed.
     /// </summary>
-    public Text MaximumSpeedTextUI;
+    private Text MaximumSpeedTextUI;
 
     /// <summary>
     /// Slider UI element displaying the minimum speed.
     /// </summary>
-    public Slider MaximumSpeedSliderUI;
+    private Slider MaximumSpeedSliderUI;
 
     /// <summary>
     /// Text UI element displaying the maximum steering force.
     /// </summary>
-    public Text MaximumSteeringForceTextUI;
+    private Text MaximumSteeringForceTextUI;
 
     /// <summary>
     /// Slider UI element displaying the maximum steering force.
     /// </summary>
-    public Slider MaximumSteeringForceSliderUI;
+    private Slider MaximumSteeringForceSliderUI;
 
     /// <summary>
     /// Display the current general settings.
     /// </summary>
+    
     private void DisplayGeneralSettings(bool initialize = false)
     {
         MinimumSpeedTextUI.text = string.Format("Minimum speed ({0:0.00})", Settings.MinSpeed);
@@ -216,27 +232,27 @@ public class MainSceneManager : MonoBehaviour
     /// <summary>
     /// Text UI element displaying the cohision force weight.
     /// </summary>
-    public Text CohesionForceWeightTextUI;
+    private Text CohesionForceWeightTextUI;
 
     /// <summary>
     /// Slider UI element displaying the cohision force weight.
     /// </summary>
-    public Slider CohesionForceWeightSliderUI;
+    private Slider CohesionForceWeightSliderUI;
 
     /// <summary>
     /// Text UI element displaying the cohision radius.
     /// </summary>
-    public Text CohesionRadiusTextUI;
+    private Text CohesionRadiusTextUI;
 
     /// <summary>
     /// Slider UI element displaying the cohision radius.
     /// </summary>
-    public Slider CohesionRadiusSliderUI;
+    private Slider CohesionRadiusSliderUI;
 
     /// <summary>
     /// Toggle UI element displaying the center status.
     /// </summary>
-    public Toggle CohesionUseCenterToggleUI;
+    private Toggle CohesionUseCenterToggleUI;
 
     /// <summary>
     /// Display the current cohesion settings.
@@ -274,22 +290,22 @@ public class MainSceneManager : MonoBehaviour
     /// <summary>
     /// Text UI element displaying the separation force weight.
     /// </summary>
-    public Text SeparationForceWeightTextUI;
+    private Text SeparationForceWeightTextUI;
 
     /// <summary>
     /// Slider UI element displaying the separation force weight.
     /// </summary>
-    public Slider SeparationForceWeightSliderUI;
+    private Slider SeparationForceWeightSliderUI;
 
     /// <summary>
     /// Text UI element displaying the separation radius.
     /// </summary>
-    public Text SeparationRadiusTextUI;
+    private Text SeparationRadiusTextUI;
 
     /// <summary>
     /// Slider UI element displaying the separation radius.
     /// </summary>
-    public Slider SeparationRadiusSliderUI;
+    private Slider SeparationRadiusSliderUI;
 
     /// <summary>
     /// Display the current separation settings.
@@ -324,22 +340,22 @@ public class MainSceneManager : MonoBehaviour
     /// <summary>
     /// Text UI element displaying the alignment force weight.
     /// </summary>
-    public Text AlignmentForceWeightTextUI;
+    private Text AlignmentForceWeightTextUI;
 
     /// <summary>
     /// Slider UI element displaying the alignment force weight.
     /// </summary>
-    public Slider AlignmentForceWeightSliderUI;
+    private Slider AlignmentForceWeightSliderUI;
 
     /// <summary>
     /// Text UI element displaying the alignment radius.
     /// </summary>
-    public Text AlignmentRadiusTextUI;
+    private Text AlignmentRadiusTextUI;
 
     /// <summary>
     /// Slider UI element displaying the alignment radius.
     /// </summary>
-    public Slider AlignmentRadiusSliderUI;
+    private Slider AlignmentRadiusSliderUI;
 
     /// <summary>
     /// Display the current alignment settings.

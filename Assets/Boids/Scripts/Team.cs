@@ -104,10 +104,12 @@ namespace Boids
                 var mV = GeneratePlayerSettings(maxVelocityMean, maxVeloctiyStdev, ref rnd);
                 var a = GeneratePlayerSettings(aggressionMean, aggressionStdev, ref rnd);
                 var mE = GeneratePlayerSettings(maxExhaustionMean, maxExhaustionStdev, ref rnd);
+                var rR = GeneratePlayerSettings(recoveryRateMean, recoveryRateStdev, ref rnd);
+                var sF = GeneratePlayerSettings(steadFastProbMean, steadFastProbStdev, ref rnd);
 
                 // Create 2 new players
-                CreatePlayer(w.Item1, mV.Item1, a.Item1, mE.Item1);
-                CreatePlayer(w.Item2, mV.Item2, a.Item2, mE.Item2);
+                CreatePlayer(w.Item1, mV.Item1, a.Item1, mE.Item1, rR.Item1, sF.Item1);
+                CreatePlayer(w.Item2, mV.Item2, a.Item2, mE.Item2, rR.Item2, sF.Item2);
             }
 
 
@@ -135,20 +137,20 @@ namespace Boids
 
         public int score;
 
-        public float weightMean = 0;
-        public float weightStdev = 0;
-        public float aggressionMean = 0;
-        public float aggressionStdev = 0;
-        public float maxVelocityMean = 0;
-        public float maxVeloctiyStdev = 0;
-        public float maxExhaustionMean = 0;
-        public float maxExhaustionStdev = 0;
+        private float weightMean = 0;
+        private float weightStdev = 0;
+        private float aggressionMean = 0;
+        private float aggressionStdev = 0;
+        private float maxVelocityMean = 0;
+        private float maxVeloctiyStdev = 0;
+        private float maxExhaustionMean = 0;
+        private float maxExhaustionStdev = 0;
 
         // added/chosen attributes
-        public float steadFastProbMean = 0;
-        public float steadFastProbStdev = 0;
-        public float recoveryRateMean = 0;
-        public float recoveryRateStdev = 0;
+        private float steadFastProbMean = 0;
+        private float steadFastProbStdev = 0;
+        private float recoveryRateMean = 0;
+        private float recoveryRateStdev = 0;
 
         /*
         [Header("Snitch")]
@@ -218,7 +220,7 @@ namespace Boids
         [SerializeField]
         [Tooltip("Text UI element displaying the slytherin score.")]
         private Text SlytherinScore;
-        private string team;
+        public string team;
 
         private void DisplayScoreBoard()
         {
@@ -271,7 +273,7 @@ namespace Boids
         /// <summary>
         /// Adds a new player to the team.
         /// </summary>
-        private void CreatePlayer(float weight, float maxVelocity, float aggressiveness, float maxExhaustion)
+        private void CreatePlayer(float weight, float maxVelocity, float aggressiveness, float maxExhaustion, float recoveryRate, float steadFastProb)
         {
             // Initialize list
             if (_Players == null)
@@ -300,8 +302,10 @@ namespace Boids
                 UnityEngine.Random.Range(0f, 360f)
             );
 
+            bool steadFast = (steadFastProb >= 0.5);
+
             // Initialize player attributes
-            playerScript.Initialize(this, weight, maxVelocity, aggressiveness, maxExhaustion);
+            playerScript.Initialize(this, weight, maxVelocity, aggressiveness, maxExhaustion, recoveryRate, steadFast);
         }
 
 
