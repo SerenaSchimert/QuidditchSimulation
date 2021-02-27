@@ -3892,7 +3892,7 @@ GameObject:
   - component: {fileID: 886588315}
   m_Layer: 0
   m_Name: Slytherin Start Area
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8413,7 +8413,7 @@ GameObject:
   - component: {fileID: 2012120060}
   m_Layer: 0
   m_Name: Gryffindor Start Area
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
