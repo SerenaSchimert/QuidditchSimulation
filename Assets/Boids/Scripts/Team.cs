@@ -24,6 +24,10 @@ namespace Boids
                 Initialize(_TeamSettings.NumberOfPlayersToGenerateOnAwake);
 
             team = _TeamSettings.team;
+
+            Snitch = GameObject.FindGameObjectWithTag("Snitch");
+
+            //_SnitchPosition = Snitch.transform.localPosition;
         }
 
         /// <summary>
@@ -58,8 +62,11 @@ namespace Boids
                 maxExhaustionMean = 50;
                 maxExhaustionStdev = 15;
 
+
+                spawnPoint = spawnPointSlytherin.position;
+
             }
-            else if (_TeamSettings.team == "Slytherin") {
+            else if (_TeamSettings.team == "Gryffindor") {
 
                 weightMean = 75;
                 weightStdev = 12;
@@ -70,22 +77,27 @@ namespace Boids
                 maxExhaustionMean = 65;
                 maxExhaustionStdev = 13;
 
+                spawnPoint = spawnPointGryffindor.position;
+
             }
 
             // Create new players (number of players should be even for better distribution results)
-            for (int i = 0; i < numberOfPlayers - 1; i += 2) {
+            for (int i = 0; i < numberOfPlayers - 1; i += 2)
+            {
 
-                    // Generate 2 values along team attribute distribution for each player attribute
+                // Generate 2 values along team attribute distribution for each player attribute
 
-                    var w = GeneratePlayerSettings(weightMean, weightStdev);
-                    var mV = GeneratePlayerSettings(maxVelocityMean, maxVeloctiyStdev);
-                    var a = GeneratePlayerSettings(aggressionMean, aggressionStdev);
-                    var mE = GeneratePlayerSettings(maxExhaustionMean, maxExhaustionStdev);
+                var w = GeneratePlayerSettings(weightMean, weightStdev);
+                var mV = GeneratePlayerSettings(maxVelocityMean, maxVeloctiyStdev);
+                var a = GeneratePlayerSettings(aggressionMean, aggressionStdev);
+                var mE = GeneratePlayerSettings(maxExhaustionMean, maxExhaustionStdev);
 
-                    // Create 2 new players
-                    CreatePlayer(w.Item1, mV.Item1, a.Item1, mE.Item1);
+                // Create 2 new players
+                CreatePlayer(w.Item1, mV.Item1, a.Item1, mE.Item1);
                 CreatePlayer(w.Item2, mV.Item2, a.Item2, mE.Item2);
             }
+
+
         }
 
         #endregion
@@ -104,6 +116,10 @@ namespace Boids
         /// </summary>
         public TeamSettingScriptable TeamSettings { get { return _TeamSettings; } }
 
+        public Vector3 spawnPoint = Vector3.zero;
+
+        public GameObject Snitch;
+
         public int score;
 
         public float weightMean = 0;
@@ -115,26 +131,33 @@ namespace Boids
         public float maxExhaustionMean = 0;
         public float maxExhaustionStdev = 0;
 
-        [Header("Center")]
+        /*
+        [Header("Snitch")]
 
         /// <summary>
-        /// The sphere representing the center of the Team.
+        /// The sphere representing the Snitch of the Team.
         /// </summary>
         [SerializeField]
-        [Tooltip("The sphere representing the center of the Team.")]
-        private GameObject Center;
+        [Tooltip("The sphere representing the Snitch of the Team.")]
+        public GameObject Snitch;
+        */
 
+        /*
         /// <summary>
-        /// The current center (local position) of the Team.
+        /// The current snitch (local position) of the Team.
         /// </summary>
         [SerializeField]
-        [Tooltip("The current center (local position) of the Team.")]
-        private Vector3 _CenterPosition;
+        [Tooltip("The current snitch position")]
+        private Vector3 _SnitchPosition;
 
         /// <summary>
-        /// The current center (local position) of the Team.
+        /// The current Snitch (local position) of the Team.
         /// </summary>
-        public Vector3 CenterPosition { get { return _CenterPosition; } }
+        public Vector3 SnitchPosition { get { return _SnitchPosition; } }
+        */
+
+        public Transform spawnPointSlytherin;
+        public Transform spawnPointGryffindor;
 
 
 
@@ -180,7 +203,7 @@ namespace Boids
 
         private void DisplayScoreBoard()
         {
-            score += 1;
+            //score += 1;
 
             if(team == "Gryffindor")
                 GryffindorScore.text = string.Format("G: {0}", score);
@@ -189,26 +212,29 @@ namespace Boids
         }
 
         /// <summary>
-        /// Continuously compute the position of the center of the Team.
+        /// Continuously compute the position of the snitch of the Team.
         /// </summary>
         private void Update()
         {
             DisplayScoreBoard();
-            // Compute the center
-            float centerX = 0, centerY = 0, centerZ = 0;
+
+            /*
+            // Compute the snitch
+            float snitchX = 0, snitchY = 0, snitchZ = 0;
             foreach (Player player in _Players)
             {
-                centerX += player.transform.localPosition.x;
-                centerY += player.transform.localPosition.y;
-                centerZ += player.transform.localPosition.z;
+                snitchX += player.transform.localPosition.x;
+                snitchY += player.transform.localPosition.y;
+                snitchZ += player.transform.localPosition.z;
             }
-            _CenterPosition = new Vector3(centerX, centerY, centerZ) / _Players.Count();
+            //_SnitchPosition = new Vector3(snitchX, snitchY, snitchZ) / _Players.Count();
 
-            // Move the sphere to the center
-            Center.transform.localPosition = _CenterPosition;
+            */
+
+            //_SnitchPosition = Snitch.transform.localPosition;
 
             // Update sphere visibility
-            Center.gameObject.SetActive(_TeamSettings.IsCenterVisible);
+            //Snitch.gameObject.SetActive(true);
 
             //txt.GetComponent<UnityEngine.UI.Text>().text = score.ToString();
         }
@@ -259,6 +285,8 @@ namespace Boids
             playerScript.Initialize(this, weight, maxVelocity, aggressiveness, maxExhaustion);
         }
 
+
+
         /// <summary>
         /// Code referenced/exprapolated from discussion of generating normal distribution-compliant values found here: 
         /// https://stats.stackexchange.com/questions/16334/how-to-sample-from-a-normal-distribution-with-known-mean-and-variance-using-a-co
@@ -266,28 +294,14 @@ namespace Boids
         public Tuple<float, float> GeneratePlayerSettings(float mean, float standDev)
         {
 
-            bool generate = true;
+            System.Random rnd = new System.Random();
 
-            float x = 0;
-            float y = 0;
+            // first generate 2 numbers between 0 and 1
+            float u1 = (float)rnd.NextDouble();
+            float u2 = (float)rnd.NextDouble();
 
-            while (generate)
-            {
-                System.Random rnd = new System.Random();
-
-                // first generate number between -1 and 1 (precision only to 0.001)
-                float u = ((float)rnd.Next(-1000, 1000)) / 1000.0f;
-                float v = ((float)rnd.Next(-1000, 1000)) / 1000.0f;
-                float w = (float)Math.Pow(u, 2.0) + (float)Math.Pow(v, 2.0);
-                if (w < 1)
-                {
-                    generate = false;
-                    float z = (float)Math.Sqrt((-2 * Math.Log(w)) / w);
-                    x = u * z;
-                    y = v * z;
-                }
-
-            }
+            float x = (float) ( Math.Sqrt(-2 * Math.Log(u1)) * Math.Cos(2 * Math.PI * u2) );
+            float y = (float) ( Math.Sqrt(-2 * Math.Log(u1)) * Math.Sin(2 * Math.PI * u2) );
 
             // Convert generated random numbers to deviation from mean
             var numbers = Tuple.Create((x * standDev + mean), (y * standDev + mean));

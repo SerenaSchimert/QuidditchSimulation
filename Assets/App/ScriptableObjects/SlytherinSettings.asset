@@ -13,25 +13,16 @@ MonoBehaviour:
   m_Name: SlytherinSettings
   m_EditorClassIdentifier: 
   team: Slytherin
-  wMean: 0
-  wStdev: 0
-  aMean: 0
-  aStdev: 0
-  mVMean: 0
-  mVStdev: 0
-  mEMean: 0
-  mEStdev: 0
   IsCenterVisible: 0
   NumberOfPlayersToGenerateOnAwake: 10
   MinSpeed: 1
-  MaxSpeed: 2.5
-  MaxSteerForce: 1.5
-  CohesionForceWeight: 1
+  MaxSteerForce: 3
+  CohesionForceWeight: 5
   UseCenterForCohesion: 1
-  CohesionRadiusThreshold: 4
+  CohesionRadiusThreshold: 2
   SeperationForceWeight: 1
   SeperationRadiusThreshold: 1
-  AlignmentForceWeight: 1
+  AlignmentForceWeight: 0
   AlignmentRadiusThreshold: 2
-  CollisionAvoidanceForceWeight: 5
-  CollisionAvoidanceRadiusThreshold: 1
+  CollisionAvoidanceForceWeight: 2
+  CollisionAvoidanceRadiusThreshold: 4

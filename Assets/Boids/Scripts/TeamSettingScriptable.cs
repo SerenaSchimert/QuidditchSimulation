@@ -45,35 +45,38 @@ namespace Boids
         public float mEStdev;
         */
 
+        //public void setManager(MainSceneManager man) { manager = man; }
+
         /// <summary>
         /// States if the sphere representing the center of the Team should be visible.
         /// </summary>
-        [Tooltip("States if the sphere representing the center should be visible.")]
-        public bool IsCenterVisible;
+        //[Tooltip("States if the sphere representing the center should be visible.")]
+        public bool IsCenterVisible = false;
 
         /// <summary>
         /// The number of players to generate on awake.
         /// </summary>
-        [Tooltip("The number of players to generate on awake.")]
+        //[Tooltip("The number of players to generate on awake.")]
         public int NumberOfPlayersToGenerateOnAwake = 10;
+
 
         /// <summary>
         /// The minimum speed a bird can fly.
         /// </summary>
-        [Tooltip("The minimum speed a bird can fly.")]
+        //[Tooltip("The minimum speed a bird can fly.")]
         public float MinSpeed = 1;
 
         /// <summary>
         /// The maximum speed a bird can fly.
         /// </summary>
-        [Tooltip("The maximum speed a bird can fly.")]
-        public float MaxSpeed = 2.5f;
+        //[Tooltip("The maximum speed a bird can fly.")]
+        //public float MaxSpeed = 2.5f;
 
         /// <summary>
         /// The maximum steering force that can be applied at any frame rate.
         /// </summary>
         [Tooltip("The maximum steering force that can be applied at any frame rate.")]
-        public float MaxSteerForce = 1.5f;
+        public float MaxSteerForce = 3.0f;
 
 
         [Header("Cohesion Force")]
@@ -82,7 +85,7 @@ namespace Boids
         /// The weight applied to the cohesion steering force.
         /// </summary>
         [Tooltip("The weight applied to the cohesion steering force.")]
-        public float CohesionForceWeight = 1;
+        public float CohesionForceWeight = 5;
 
         /// <summary>
         /// Uses the center of the Team when enforcing cohesion.
@@ -95,7 +98,7 @@ namespace Boids
         /// The distance used to find nearby players that we need to stay around.
         /// </summary>
         [Tooltip("The distance used to find nearby players that we need to stay around.")]
-        public float CohesionRadiusThreshold = 4;
+        public float CohesionRadiusThreshold = 2;
 
 
 
@@ -121,7 +124,7 @@ namespace Boids
         /// The weight applied to the alignment steering force.
         /// </summary>
         [Tooltip("The weight applied to the alignment steering force.")]
-        public float AlignmentForceWeight = 1;
+        public float AlignmentForceWeight = 0;
 
         /// <summary>
         /// The distance used to find nearby players that we need to stay aligned with.
@@ -137,13 +140,13 @@ namespace Boids
         /// The weight applied to the collision avoidance steering force.
         /// </summary>
         [Tooltip("The weight applied to the collision avoidance steering force.")]
-        public float CollisionAvoidanceForceWeight = 5;
+        public float CollisionAvoidanceForceWeight = 2;
 
         /// <summary>
         /// The distance used to find nearby obstacles that we need to avoid.
         /// </summary>
         [Tooltip("The distance used to find nearby obstacles that we need to avoid.")]
-        public float CollisionAvoidanceRadiusThreshold = 1;
+        public float CollisionAvoidanceRadiusThreshold = 4;
 
 
     }

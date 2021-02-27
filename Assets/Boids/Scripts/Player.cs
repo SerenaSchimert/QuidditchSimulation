@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -52,14 +53,27 @@ namespace Boids
         private Team Team;
 
         /// <summary>
+        /// The team this player belongs to.
+        /// </summary>
+        private Vector3 spawnPoint;
+
+        /// <summary>
         /// Player attributes
         /// </summary>
         private float weight;
         private float maxVelocity;
-        private float aggressiveness;
-        private float maxExhaustion;
-        private float exhaustion;
+        public float aggressiveness;
+        public float maxExhaustion;
+        public float exhaustion;
 
+        private GameObject Snitch;
+
+        /// <summary>
+        /// Possible States
+        /// </summary>
+
+        private bool falling = false;
+        private bool resting = false;
 
         #endregion
 
@@ -73,29 +87,75 @@ namespace Boids
             // Initialize the new velocity
             Vector3 acceleration = Vector3.zero;
 
-            // Compute cohesion
-            acceleration += NormalizeSteeringForce(ComputeCohisionForce())
-                * Team.TeamSettings.CohesionForceWeight;
-
-            // Compute seperation
-            acceleration += NormalizeSteeringForce(ComputeSeperationForce())
-                * Team.TeamSettings.SeperationForceWeight;
-
-            // Compute alignment
-            acceleration += NormalizeSteeringForce(ComputeAlignmentForce())
-                * Team.TeamSettings.AlignmentForceWeight;
-
-            // Compute collision avoidance
-            acceleration += NormalizeSteeringForce(ComputeCollisionAvoidanceForce()) 
-                * Team.TeamSettings.CollisionAvoidanceForceWeight;
-
-            // Compute the new velocity
             Vector3 velocity = Rigidbody.velocity;
-            velocity += acceleration * Time.deltaTime;
 
-            // Ensure the velocity remains within the accepted range
-            velocity = velocity.normalized * Mathf.Clamp(velocity.magnitude,
-                Team.TeamSettings.MinSpeed, Team.TeamSettings.MaxSpeed);
+            if (exhaustion >= (maxExhaustion - 10.0f))
+            {
+
+                resting = true;
+            }
+
+            if (exhaustion <= 10.0f)
+            {
+
+                resting = false;
+            }
+
+            if (exhaustion >= maxExhaustion) {
+
+                falling = true;
+            }
+
+            if (falling && (transform.localPosition.y <= 0.05f)) {
+
+                transform.localPosition = spawnPoint;
+                // Give the player another small push
+                Rigidbody.velocity = transform.forward.normalized * Team.TeamSettings.MinSpeed;
+
+                falling = false;
+                exhaustion = 0.0f;
+            }
+
+            if (!falling)
+            {
+
+                // Compute cohesion
+                acceleration += NormalizeSteeringForce(ComputeCohesionForce())
+                  * Team.TeamSettings.CohesionForceWeight;
+
+                // Compute seperation
+                acceleration += NormalizeSteeringForce(ComputeSeperationForce())
+                   * Team.TeamSettings.SeperationForceWeight;
+
+                // Compute alignment
+                acceleration += NormalizeSteeringForce(ComputeAlignmentForce())
+                  * Team.TeamSettings.AlignmentForceWeight;
+
+                // Compute collision avoidance
+                acceleration += NormalizeSteeringForce(ComputeCollisionAvoidanceForce())
+                    * Team.TeamSettings.CollisionAvoidanceForceWeight;
+
+                velocity += acceleration * Time.deltaTime;
+
+                // Ensure the velocity remains within the accepted range
+                velocity = velocity.normalized * Mathf.Clamp(velocity.magnitude,
+                    Team.TeamSettings.MinSpeed, maxVelocity);
+
+            }
+            else {
+
+                acceleration.y = -1.0f;
+                velocity += acceleration * Time.deltaTime;
+
+            }
+
+            if (resting) { 
+                
+                velocity = Vector3.zero;
+                exhaustion -= 0.000001f;
+            }
+
+            exhaustion += (velocity.x + velocity.y + velocity.z) / 100000.0f;
 
             // Apply velocity
             Rigidbody.velocity = velocity;
@@ -113,30 +173,29 @@ namespace Boids
         }
 
         /// <summary>
-        /// Computes the cohision force that will pull the player back to the center of the team.
+        /// Computes the Cohesion force that will pull the player back to the center of the team.
         /// </summary>
-        private Vector3 ComputeCohisionForce()
+        private Vector3 ComputeCohesionForce()
         {
-            // Check if this is the only player in the team
-            if (Team.Players.Count == 1)
-                return Vector3.zero;
 
-            // Check if we are using the center of the team
-            if (Team.TeamSettings.UseCenterForCohesion)
-            {
-                // Get current center of the team
-                Vector3 center = Team.CenterPosition;
+            // Get current center of the team
+            //Vector3 center = Team.SnitchPosition;
 
-                // Get rid of this player's position from the center
-                float newCenterX = center.x * Team.Players.Count - transform.localPosition.x;
-                float newCenterY = center.y * Team.Players.Count - transform.localPosition.y;
-                float newCenterZ = center.z * Team.Players.Count - transform.localPosition.z;
-                Vector3 newCenter = new Vector3(newCenterX, newCenterY, newCenterZ) / (Team.Players.Count - 1);
+            //Vector3 snitch = Team.manager.GetComponent<MainSceneManager>().Snitch.GetComponent<Snitch>().Position;
+            Vector3 snitch = Team.Snitch.transform.position;
 
-                // Compute force
-                return newCenter - transform.localPosition;
-            }
+            // Get rid of this player's position from the center
+            //float newCenterX = center.x * Team.Players.Count - transform.localPosition.x;
+            //float newCenterY = center.y * Team.Players.Count - transform.localPosition.y;
+            //float newCenterZ = center.z * Team.Players.Count - transform.localPosition.z;
+            //Vector3 newCenter = new Vector3(newCenterX, newCenterY, newCenterZ) / (Team.Players.Count - 1);
 
+
+            // Compute force
+            //return newCenter - transform.localPosition;
+            return snitch - transform.localPosition;
+
+            /*
             // Else, use the center of the neighbor players
             float centerX = 0, centerY = 0, centerZ = 0;
             int count = 0;
@@ -156,6 +215,8 @@ namespace Boids
             return count == 0 
                 ? Vector3.zero 
                 : new Vector3(centerX, centerY, centerZ) / count;
+            */
+
         }
 
         /// <summary>
@@ -218,7 +279,58 @@ namespace Boids
             return transform.position - hitInfo.point;
         }
 
-    #endregion
+        /// <summary>
+        /// Handle player or snitch collisions
+        /// </summary>
+        private void OnTriggerEnter(Collider col)
+        {
+            // Check that collision is with rigidbody object
+            if (col.GetComponent<Rigidbody>() == null) return;
 
-    }
+            Rigidbody targetRigidbody = col.GetComponent<Rigidbody>();
+
+            if (targetRigidbody.GetComponent<Player>() != null) {
+
+                float targetExhaustion = targetRigidbody.GetComponent<Player>().exhaustion;
+                float targetMaxExhaustion = targetRigidbody.GetComponent<Player>().maxExhaustion;
+                float targetAggressiveness = targetRigidbody.GetComponent<Player>().aggressiveness;
+
+                System.Random rnd = new System.Random();
+
+                float playerValue = aggressiveness * (((float)rnd.NextDouble()) * (1.2f - 0.8f) * (1.0f - (exhaustion / maxExhaustion)));
+                float targetValue = targetAggressiveness * (((float)rnd.NextDouble()) * (1.2f - 0.8f) * (1.0f - (targetExhaustion / targetMaxExhaustion)));
+
+                if (playerValue < targetValue) {
+
+                    if (targetRigidbody.GetComponent<Player>().Team) 
+                    {
+                        if (rnd.NextDouble() <= 0.05) 
+                        {
+                            falling = true;
+                        }
+                    }
+                    else
+                    {
+                        falling = true;
+                    }
+                }
+
+            } else if (targetRigidbody.GetComponent<Snitch>() != null) {
+
+
+                if (targetRigidbody.GetComponent<Snitch>().getLastWinBy() == Team)
+                {
+                    Team.score += 2;
+                }
+                else {
+                    Team.score += 1;
+                }
+
+                targetRigidbody.GetComponent<Snitch>().setLastWinBy(Team);
+            }
+        }
+
+            #endregion
+
+        }
 }

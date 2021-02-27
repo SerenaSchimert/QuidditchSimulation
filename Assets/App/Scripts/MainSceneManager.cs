@@ -14,11 +14,58 @@ public class MainSceneManager : MonoBehaviour
     /// </summary>
     public TeamSettingScriptable Settings;
 
+    //public GameObject Gryffindor;
+    //public GameObject Slytherin;
+
+    //Settings.setManager(this);
+
+    //public GameObject SnitchTemplate;
+
+    //public GameObject SnitchParent;
+
+    //public Snitch snitch;
+    //public GameObject SnitchPrefab;
+    //public GameObject SnitchParent;
+
+    //public GameObject Snitch;
+
+    //Last won team
+    //private Team lastWinBy;
+
+    //GameObject snitch;
+
     /// <summary>
     /// Executes once on start.
     /// </summary>
     private void Start()
     {
+        /*
+        //Clear existing snitch
+        Clear();
+
+        // Create snitch
+        Snitch = GameObject.Instantiate(SnitchPrefab, SnitchParent.transform);
+
+        // Extract its script
+        Snitch snitchScript = Snitch.GetComponent<Snitch>();
+
+        // Set random location
+        Snitch.transform.localPosition = new Vector3
+        (
+            UnityEngine.Random.Range(-2f, 2f),
+            UnityEngine.Random.Range(-2f, 2f),
+            UnityEngine.Random.Range(-2f, 2f)
+        );
+
+        // Set random rotation
+        Snitch.transform.localEulerAngles = new Vector3
+        (
+            UnityEngine.Random.Range(0f, 360f),
+            UnityEngine.Random.Range(0f, 360f),
+            UnityEngine.Random.Range(0f, 360f)
+        );
+        */
+
         // Display the app ScoreBoard
         DisplayScoreBoard();
 
@@ -126,13 +173,13 @@ public class MainSceneManager : MonoBehaviour
     private void DisplayGeneralSettings(bool initialize = false)
     {
         MinimumSpeedTextUI.text = string.Format("Minimum speed ({0:0.00})", Settings.MinSpeed);
-        MaximumSpeedTextUI.text = string.Format("Maximum speed ({0:0.00})", Settings.MaxSpeed);
+        //MaximumSpeedTextUI.text = string.Format("Maximum speed ({0:0.00})", Settings.MaxSpeed);
         MaximumSteeringForceTextUI.text = string.Format("Max steering force ({0:0.00})", Settings.MaxSteerForce);
 
         if (initialize)
         {
             MinimumSpeedSliderUI.value = Settings.MinSpeed;
-            MaximumSpeedSliderUI.value = Settings.MaxSpeed;
+            //MaximumSpeedSliderUI.value = Settings.MaxSpeed;
             MaximumSteeringForceSliderUI.value = Settings.MaxSteerForce;
         }
     }
@@ -143,9 +190,19 @@ public class MainSceneManager : MonoBehaviour
     private void UpdateGeneralSettings()
     {
         Settings.MinSpeed = MinimumSpeedSliderUI.value;
-        Settings.MaxSpeed = MaximumSpeedSliderUI.value;
+        //Settings.MaxSpeed = MaximumSpeedSliderUI.value;
         Settings.MaxSteerForce = MaximumSteeringForceSliderUI.value;
     }
+
+    /// <summary>
+    /// Deletes snitches.
+    /// </summary>
+    /*
+    private void Clear()
+    {
+        GameObject.Destroy(SnitchParent.transform);
+    }
+    */
 
     #endregion
 
