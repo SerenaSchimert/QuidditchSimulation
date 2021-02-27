@@ -50,6 +50,8 @@ namespace Boids
                 maxExhaustionStdev = _TeamSettings.mEStdev;
             */
 
+            System.Random rnd = new System.Random();
+
             if (_TeamSettings.team == "Slytherin")
             {
 
@@ -62,6 +64,11 @@ namespace Boids
                 maxExhaustionMean = 50;
                 maxExhaustionStdev = 15;
 
+                // added/chosen attributes
+                steadFastProbMean = 0.35f;
+                steadFastProbStdev = 0.15f;
+                recoveryRateMean = 0.50f;
+                recoveryRateStdev = 0.10f;
 
                 spawnPoint = spawnPointSlytherin.position;
 
@@ -77,6 +84,12 @@ namespace Boids
                 maxExhaustionMean = 65;
                 maxExhaustionStdev = 13;
 
+                // added/chosen attributes
+                steadFastProbMean = 0.55f;
+                steadFastProbStdev = 0.25f;
+                recoveryRateMean = 0.60f;
+                recoveryRateStdev = 0.15f;
+
                 spawnPoint = spawnPointGryffindor.position;
 
             }
@@ -87,10 +100,10 @@ namespace Boids
 
                 // Generate 2 values along team attribute distribution for each player attribute
 
-                var w = GeneratePlayerSettings(weightMean, weightStdev);
-                var mV = GeneratePlayerSettings(maxVelocityMean, maxVeloctiyStdev);
-                var a = GeneratePlayerSettings(aggressionMean, aggressionStdev);
-                var mE = GeneratePlayerSettings(maxExhaustionMean, maxExhaustionStdev);
+                var w = GeneratePlayerSettings(weightMean, weightStdev, ref rnd);
+                var mV = GeneratePlayerSettings(maxVelocityMean, maxVeloctiyStdev, ref rnd);
+                var a = GeneratePlayerSettings(aggressionMean, aggressionStdev, ref rnd);
+                var mE = GeneratePlayerSettings(maxExhaustionMean, maxExhaustionStdev, ref rnd);
 
                 // Create 2 new players
                 CreatePlayer(w.Item1, mV.Item1, a.Item1, mE.Item1);
@@ -130,6 +143,12 @@ namespace Boids
         public float maxVeloctiyStdev = 0;
         public float maxExhaustionMean = 0;
         public float maxExhaustionStdev = 0;
+
+        // added/chosen attributes
+        public float steadFastProbMean = 0;
+        public float steadFastProbStdev = 0;
+        public float recoveryRateMean = 0;
+        public float recoveryRateStdev = 0;
 
         /*
         [Header("Snitch")]
@@ -291,10 +310,8 @@ namespace Boids
         /// Code referenced/exprapolated from discussion of generating normal distribution-compliant values found here: 
         /// https://stats.stackexchange.com/questions/16334/how-to-sample-from-a-normal-distribution-with-known-mean-and-variance-using-a-co
         /// <summary>
-        public Tuple<float, float> GeneratePlayerSettings(float mean, float standDev)
+        public Tuple<float, float> GeneratePlayerSettings(float mean, float standDev, ref System.Random rnd)
         {
-
-            System.Random rnd = new System.Random();
 
             // first generate 2 numbers between 0 and 1
             float u1 = (float)rnd.NextDouble();

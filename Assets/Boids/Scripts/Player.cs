@@ -65,6 +65,8 @@ namespace Boids
         public float aggressiveness;
         public float maxExhaustion;
         public float exhaustion;
+        public float recoveryRate;
+        public bool  steadFast;
 
         private GameObject Snitch;
 
@@ -128,12 +130,12 @@ namespace Boids
                    * Team.TeamSettings.SeperationForceWeight;
 
                 // Compute alignment
-                acceleration += NormalizeSteeringForce(ComputeAlignmentForce())
-                  * Team.TeamSettings.AlignmentForceWeight;
+                //acceleration += NormalizeSteeringForce(ComputeAlignmentForce())
+                 // * Team.TeamSettings.AlignmentForceWeight;
 
                 // Compute collision avoidance
-                acceleration += NormalizeSteeringForce(ComputeCollisionAvoidanceForce())
-                    * Team.TeamSettings.CollisionAvoidanceForceWeight;
+                //acceleration += NormalizeSteeringForce(ComputeCollisionAvoidanceForce())
+                  //  * Team.TeamSettings.CollisionAvoidanceForceWeight;
 
                 velocity += acceleration * Time.deltaTime;
 
@@ -152,10 +154,10 @@ namespace Boids
             if (resting) { 
                 
                 velocity = Vector3.zero;
-                exhaustion -= 0.000001f;
+                exhaustion -= 0.25f;
             }
 
-            exhaustion += (velocity.x + velocity.y + velocity.z) / 100000.0f;
+            exhaustion += (velocity.x + velocity.y + velocity.z) / 20.0f;
 
             // Apply velocity
             Rigidbody.velocity = velocity;
@@ -193,7 +195,7 @@ namespace Boids
 
             // Compute force
             //return newCenter - transform.localPosition;
-            return snitch - transform.localPosition;
+            return snitch - transform.position;
 
             /*
             // Else, use the center of the neighbor players

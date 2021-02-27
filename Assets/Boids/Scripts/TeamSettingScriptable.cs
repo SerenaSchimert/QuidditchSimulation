@@ -85,7 +85,7 @@ namespace Boids
         /// The weight applied to the cohesion steering force.
         /// </summary>
         [Tooltip("The weight applied to the cohesion steering force.")]
-        public float CohesionForceWeight = 5;
+        public float CohesionForceWeight = 3;
 
         /// <summary>
         /// Uses the center of the Team when enforcing cohesion.

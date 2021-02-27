@@ -21,7 +21,7 @@ public class MainSceneManager : MonoBehaviour
 
     //public GameObject SnitchTemplate;
 
-    //public GameObject SnitchParent;
+    private GameObject Snitch;
 
     //public Snitch snitch;
     //public GameObject SnitchPrefab;
@@ -39,6 +39,9 @@ public class MainSceneManager : MonoBehaviour
     /// </summary>
     private void Start()
     {
+
+        Snitch = GameObject.FindGameObjectWithTag("Snitch");
+
         /*
         //Clear existing snitch
         Clear();

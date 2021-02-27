@@ -193,7 +193,7 @@ namespace Boids
                 
                 System.Random rnd = new System.Random();
                 acceleration.x += 0.5f - ((float) rnd.NextDouble());
-                acceleration.y += 0.8f - ((float) rnd.NextDouble());
+                acceleration.y += 2.0f - ((float) rnd.NextDouble());
                 acceleration.z += 0.5f - ((float) rnd.NextDouble());
             }
 
