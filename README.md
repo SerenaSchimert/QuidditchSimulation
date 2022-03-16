@@ -18,7 +18,7 @@ Added Player Attributes:
 
 Code Sources:
 The Boids-Simulation found here:https://omaddam.github.io/Boids-Simulation/
-- was used as a code base/starting point for the simulation implementation
+- was used as a code base/starting point for the simulation implementation.
 Implementation of a method sampling player attributes from a normal distribution given mean and standard deviation derived from responses to this query: https://stats.stackexchange.com/questions/16334/how-to-sample-from-a-normal-distribution-with-known-mean-and-variance-using-a-co
 Some snippets of code referenced from 'GameManager' and 'TankManager' code in unity tanks Tutorial: https://learn.unity.com/project/tanks-tutorial
 
