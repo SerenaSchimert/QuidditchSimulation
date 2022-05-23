@@ -12,7 +12,7 @@ public class MainSceneManager : MonoBehaviour
     /// <summary>
     /// Team settings.
     /// </summary>
-    public TeamSettingScriptable Settings;
+    //public TeamSettingScriptable Settings;    // -> Relic from testing values via extra UI components on slider, settings now fixed
 
     //public GameObject Gryffindor;
     //public GameObject Slytherin;
@@ -71,9 +71,11 @@ public class MainSceneManager : MonoBehaviour
         );
         */
 
-        // Display the app ScoreBoard
+        // Display the ScoreBoard
         DisplayScoreBoard();
 
+        // UI relic from initial testing of values - leaving in some of this code used during testing values in case simulation is changed again in future
+        /*
         // Set and display general settings
         DisplayGeneralSettings(true);
 
@@ -85,6 +87,7 @@ public class MainSceneManager : MonoBehaviour
 
         // Set and display alignment settings
         DisplayAlignmentSettings(true);
+        */
     }
 
     /// <summary>
@@ -100,10 +103,10 @@ public class MainSceneManager : MonoBehaviour
             else Winner.color = Color.red;
         }
 
-
+        /*
         // General settings
         UpdateGeneralSettings();
-        DisplayGeneralSettings();
+        DisplayGeneralSettings(false);
 
         // Cohesion settings
         UpdateCohesionSettings();
@@ -116,6 +119,7 @@ public class MainSceneManager : MonoBehaviour
         // Alignment settings
         UpdateAlignmentSettings();
         DisplayAlignmentSettings();
+        */
     }
 
     #endregion
@@ -150,6 +154,7 @@ public class MainSceneManager : MonoBehaviour
    
     #endregion
 
+    /*
     
     #region General Settings
 
@@ -168,12 +173,12 @@ public class MainSceneManager : MonoBehaviour
     /// <summary>
     /// Text UI element displaying the maximum speed.
     /// </summary>
-    private Text MaximumSpeedTextUI;
+    //private Text MaximumSpeedTextUI;
 
     /// <summary>
-    /// Slider UI element displaying the minimum speed.
+    /// Slider UI element displaying the maximum speed.
     /// </summary>
-    private Slider MaximumSpeedSliderUI;
+    //private Slider MaximumSpeedSliderUI;
 
     /// <summary>
     /// Text UI element displaying the maximum steering force.
@@ -189,18 +194,19 @@ public class MainSceneManager : MonoBehaviour
     /// Display the current general settings.
     /// </summary>
     
-    private void DisplayGeneralSettings(bool initialize = false)
+    private void DisplayGeneralSettings(bool initialize)
     {
-        MinimumSpeedTextUI.text = string.Format("Minimum speed ({0:0.00})", Settings.MinSpeed);
-        //MaximumSpeedTextUI.text = string.Format("Maximum speed ({0:0.00})", Settings.MaxSpeed);
-        MaximumSteeringForceTextUI.text = string.Format("Max steering force ({0:0.00})", Settings.MaxSteerForce);
-
         if (initialize)
         {
             MinimumSpeedSliderUI.value = Settings.MinSpeed;
             //MaximumSpeedSliderUI.value = Settings.MaxSpeed;
             MaximumSteeringForceSliderUI.value = Settings.MaxSteerForce;
         }
+
+        MinimumSpeedTextUI.text = string.Format("Minimum speed ({0:0.00})", Settings.MinSpeed);
+        //MaximumSpeedTextUI.text = string.Format("Maximum speed ({0:0.00})", Settings.MaxSpeed);
+        MaximumSteeringForceTextUI.text = string.Format("Max steering force ({0:0.00})", Settings.MaxSteerForce);
+
     }
 
     /// <summary>
@@ -216,12 +222,12 @@ public class MainSceneManager : MonoBehaviour
     /// <summary>
     /// Deletes snitches.
     /// </summary>
-    /*
+    
     private void Clear()
     {
         GameObject.Destroy(SnitchParent.transform);
     }
-    */
+    
 
     #endregion
 
@@ -382,5 +388,7 @@ public class MainSceneManager : MonoBehaviour
     }
 
     #endregion
+
+    */
 
 }

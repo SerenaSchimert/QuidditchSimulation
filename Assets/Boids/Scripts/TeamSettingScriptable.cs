@@ -61,22 +61,22 @@ namespace Boids
 
 
         /// <summary>
-        /// The minimum speed a bird can fly.
+        /// The minimum speed a player can fly.
         /// </summary>
-        //[Tooltip("The minimum speed a bird can fly.")]
+        [Tooltip("The minimum speed a player can fly.")]
         public float MinSpeed = 1;
 
         /// <summary>
-        /// The maximum speed a bird can fly.
+        /// The maximum speed a player can fly.
         /// </summary>
-        //[Tooltip("The maximum speed a bird can fly.")]
+        //[Tooltip("The maximum speed a player can fly.")]
         //public float MaxSpeed = 2.5f;
 
         /// <summary>
         /// The maximum steering force that can be applied at any frame rate.
         /// </summary>
         [Tooltip("The maximum steering force that can be applied at any frame rate.")]
-        public float MaxSteerForce = 3.0f;
+        public float MaxSteerForce = 3;
 
 
         [Header("Cohesion Force")]
